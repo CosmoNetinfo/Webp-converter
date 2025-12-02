@@ -1,0 +1,5 @@
+{
+  "name": "WebP & AVIF Converter",
+  "description": "A powerful and intuitive web application that allows users to convert their images to modern WebP and AVIF formats. Features include quality control, format selection, and batch processing.",
+  "requestFramePermissions": []
+}
