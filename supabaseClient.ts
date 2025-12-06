@@ -49,8 +49,19 @@ export const updateSupabaseConfig = (url: string, key: string) => {
     return supabaseInstance;
 };
 
-// Keep the direct export for backward compatibility where possible, but it might be null now or default env
-export const supabase = getSupabaseClient() as SupabaseClient; // WARNING: acts as singleton, might be stale if updated. prefer using getSupabaseClient() in components or context.
+// Direct export using mutable binding. 
+// This allows imports to see the updated value when updateSupabaseConfig is called.
+export let supabase = getSupabaseClient();
+
+// Hook into the update function to update the export
+const originalUpdate = updateSupabaseConfig;
+// @ts-ignore
+updateSupabaseConfig = (url: string, key: string) => {
+    const newClient = originalUpdate(url, key);
+    // Update the exported variable
+    supabase = newClient;
+    return newClient;
+};
 
 export const isSupabaseConfigured = () => {
     return !!getSupabaseClient();
