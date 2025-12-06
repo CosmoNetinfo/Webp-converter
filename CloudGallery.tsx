@@ -76,24 +76,25 @@ export const CloudGallery: React.FC = () => {
         }
     };
 
-    if (loading) return <div className="text-center py-8 text-slate-400">Loading cloud gallery...</div>;
+    if (loading) return <div className="text-center py-12 text-slate-400 font-medium tracking-wide animate-pulse">Loading gallery assets...</div>;
 
     if (images.length === 0) return (
-        <div className="text-center py-12 border-2 border-dashed border-slate-700/50 rounded-xl bg-slate-800/30">
-            <p className="text-slate-400">No images in cloud storage yet.</p>
+        <div className="text-center py-16 border-2 border-dashed border-white/10 rounded-2xl bg-slate-900/30 backdrop-blur-sm">
+            <p className="text-slate-500 text-lg">No assets in cloud storage yet.</p>
+            <p className="text-slate-600 text-sm mt-2">Upload converted images to see them here.</p>
         </div>
     );
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {images.map(img => (
-                <div key={img.id} className="bg-slate-800 rounded-lg overflow-hidden shadow-lg border border-slate-700 group">
-                    <div className="relative h-48 bg-slate-900/50">
-                        <img src={img.url} alt={img.original_name} className="w-full h-full object-contain" />
-                        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-4 opacity-0 group-hover:opacity-100 transition-opacity flex justify-end gap-2">
+                <div key={img.id} className="bg-slate-900/60 backdrop-blur-lg rounded-xl overflow-hidden shadow-xl border border-white/5 hover:border-white/20 hover:shadow-cyan-900/20 transition-all group">
+                    <div className="relative h-48 bg-black/40 p-4">
+                        <img src={img.url} alt={img.original_name} className="w-full h-full object-contain filter drop-shadow-lg" />
+                        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-4 opacity-0 group-hover:opacity-100 transition-all duration-300 flex justify-end gap-2">
                             <button
                                 onClick={() => deleteImage(img.id, img.url)}
-                                className="p-2 bg-red-600/80 hover:bg-red-600 text-white rounded-md transition-colors"
+                                className="p-2 bg-red-500/80 hover:bg-red-500 text-white rounded-lg transition-colors shadow-lg shadow-red-900/20 backdrop-blur-sm"
                                 title="Delete from cloud"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
@@ -102,18 +103,18 @@ export const CloudGallery: React.FC = () => {
                             </button>
                         </div>
                     </div>
-                    <div className="p-4 space-y-2">
+                    <div className="p-5 space-y-3">
                         <div className="flex items-center justify-between">
-                            <h3 className="text-sm font-medium text-white truncate flex-1" title={img.original_name}>{img.original_name}</h3>
-                            <span className="text-xs text-slate-500 uppercase ml-2">{img.format}</span>
+                            <h3 className="text-sm font-semibold text-slate-200 truncate flex-1" title={img.original_name}>{img.original_name}</h3>
+                            <span className="text-xs font-mono text-cyan-400/80 bg-cyan-950/30 px-2 py-0.5 rounded border border-cyan-500/20 uppercase ml-2">{img.format}</span>
                         </div>
-                        <div className="flex items-center justify-between text-xs text-slate-400">
+                        <div className="flex items-center justify-between text-xs text-slate-500">
                             <span>{formatBytes(img.size)}</span>
                             <span>{new Date(img.created_at).toLocaleDateString()}</span>
                         </div>
                         <button
                             onClick={() => copyToClipboard(img.url, img.id)}
-                            className={`w-full py-2 px-3 rounded-md text-sm font-bold transition-all flex items-center justify-center gap-2 ${copyState === img.id ? 'bg-green-600 text-white' : 'bg-slate-700 hover:bg-slate-600 text-slate-200'}`}
+                            className={`w-full py-2.5 px-3 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 ${copyState === img.id ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-lg shadow-green-900/30' : 'bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/5 hover:border-white/10'}`}
                         >
                             {copyState === img.id ? (
                                 <>

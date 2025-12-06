@@ -417,31 +417,38 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white p-4 sm:p-8">
+    <div className="min-h-screen bg-[#050510] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#1a1c4b] via-[#050510] to-[#000000] text-slate-200 p-4 sm:p-8 selection:bg-cyan-500/30">
       <div className="max-w-7xl mx-auto">
-        <header className="text-center mb-8">
-          <h1 className="text-4xl sm:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-indigo-500">WebP & AVIF Converter</h1>
-          <p className="text-slate-400 mt-2 mb-6">Convert your images to modern web formats with ease.</p>
+        <header className="text-center mb-12 relative">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-32 bg-indigo-500/20 blur-[100px] -z-10 rounded-full pointer-events-none"></div>
+          <h1 className="text-5xl sm:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-400 via-violet-400 to-cyan-400 drop-shadow-sm mb-4">
+            Cosmo Converter
+          </h1>
+          <p className="text-slate-400 text-lg max-w-2xl mx-auto">
+            Transform your images into high-performance <span className="text-cyan-400 font-medium">WebP</span> & <span className="text-fuchsia-400 font-medium">AVIF</span> assets for the modern web.
+          </p>
 
           {!isSupabaseConfigured() && (
-            <div className="bg-amber-500/10 text-amber-200 p-4 rounded-lg border border-amber-500/50 inline-block mb-6">
+            <div className="mt-6 bg-amber-500/10 text-amber-200 p-4 rounded-lg border border-amber-500/20 inline-block backdrop-blur-sm">
               <strong>Config Missing:</strong> Add your Supabase URL and Anon Key to <code>.env</code> file to enable Cloud Gallery.
             </div>
           )}
 
           {isSupabaseConfigured() && (
-            <div className="flex justify-center gap-4 border-b border-slate-700 pb-1">
+            <div className="flex justify-center gap-2 mt-8 border-b border-white/10 pb-1 w-fit mx-auto">
               <button
                 onClick={() => setActiveTab('converter')}
-                className={`px-4 py-2 font-medium border-b-2 transition-colors ${activeTab === 'converter' ? 'border-sky-500 text-white' : 'border-transparent text-slate-400 hover:text-white'}`}
+                className={`px-6 py-3 font-medium text-sm tracking-wide transition-all relative ${activeTab === 'converter' ? 'text-white' : 'text-slate-500 hover:text-slate-300'}`}
               >
                 Converter
+                {activeTab === 'converter' && <span className="absolute bottom-0 left-0 w-full h-[2px] bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.7)] rounded-full"></span>}
               </button>
               <button
                 onClick={() => setActiveTab('cloud')}
-                className={`px-4 py-2 font-medium border-b-2 transition-colors ${activeTab === 'cloud' ? 'border-sky-500 text-white' : 'border-transparent text-slate-400 hover:text-white'}`}
+                className={`px-6 py-3 font-medium text-sm tracking-wide transition-all relative ${activeTab === 'cloud' ? 'text-white' : 'text-slate-500 hover:text-slate-300'}`}
               >
                 Cloud Gallery
+                {activeTab === 'cloud' && <span className="absolute bottom-0 left-0 w-full h-[2px] bg-fuchsia-400 shadow-[0_0_10px_rgba(232,121,249,0.7)] rounded-full"></span>}
               </button>
             </div>
           )}
@@ -457,23 +464,23 @@ export default function App() {
               ) : (
                 <>
                   {/* Controls Bar */}
-                  <div className="bg-slate-800/50 rounded-xl p-6 mb-8 flex flex-col xl:flex-row gap-6 items-start xl:items-end justify-between border border-slate-700/50">
+                  <div className="bg-slate-900/60 backdrop-blur-xl rounded-2xl p-6 mb-10 flex flex-col xl:flex-row gap-8 items-center xl:items-end justify-between border border-white/10 shadow-2xl shadow-black/50">
 
                     {/* Settings Group */}
-                    <div className="flex flex-col md:flex-row gap-6 w-full xl:w-auto">
+                    <div className="flex flex-col md:flex-row gap-8 w-full xl:w-auto items-center xl:items-end">
                       {/* Format Selector */}
-                      <div className="w-full md:w-48">
-                        <label className="block mb-2 font-medium text-slate-300 text-sm uppercase tracking-wide">Output Format</label>
-                        <div className="flex bg-slate-700 rounded-lg p-1">
+                      <div className="w-full md:w-56">
+                        <label className="block mb-3 font-semibold text-slate-400 text-xs uppercase tracking-wider">Output Format</label>
+                        <div className="flex bg-black/40 rounded-xl p-1.5 border border-white/5">
                           <button
                             onClick={() => setOutputFormat('image/webp')}
-                            className={`flex-1 py-2 px-3 rounded-md text-sm font-bold transition-all ${outputFormat === 'image/webp' ? 'bg-sky-600 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-slate-600'}`}
+                            className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-bold transition-all duration-300 ${outputFormat === 'image/webp' ? 'bg-gradient-to-br from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/25' : 'text-slate-500 hover:text-white hover:bg-white/5'}`}
                           >
                             WebP
                           </button>
                           <button
                             onClick={() => setOutputFormat('image/avif')}
-                            className={`flex-1 py-2 px-3 rounded-md text-sm font-bold transition-all ${outputFormat === 'image/avif' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-slate-600'}`}
+                            className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-bold transition-all duration-300 ${outputFormat === 'image/avif' ? 'bg-gradient-to-br from-fuchsia-600 to-purple-600 text-white shadow-lg shadow-fuchsia-500/25' : 'text-slate-500 hover:text-white hover:bg-white/5'}`}
                           >
                             AVIF
                           </button>
@@ -481,10 +488,10 @@ export default function App() {
                       </div>
 
                       {/* Quality Slider */}
-                      <div className="w-full md:w-64">
-                        <label htmlFor="quality" className="block mb-2 font-medium text-slate-300 text-sm uppercase tracking-wide flex justify-between">
+                      <div className="w-full md:w-72">
+                        <label htmlFor="quality" className="block mb-3 font-semibold text-slate-400 text-xs uppercase tracking-wider flex justify-between">
                           <span>Quality</span>
-                          <span className={`font-bold ${outputFormat === 'image/webp' ? 'text-sky-400' : 'text-indigo-400'}`}>{Math.round(quality * 100)}%</span>
+                          <span className={`font-mono text-base ${outputFormat === 'image/webp' ? 'text-cyan-400' : 'text-fuchsia-400'}`}>{Math.round(quality * 100)}%</span>
                         </label>
                         <input
                           type="range"
@@ -494,7 +501,7 @@ export default function App() {
                           step="0.05"
                           value={quality}
                           onChange={e => setQuality(parseFloat(e.target.value))}
-                          className={`w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer ${outputFormat === 'image/webp' ? 'accent-sky-500' : 'accent-indigo-500'}`}
+                          className={`w-full h-2 bg-slate-700/50 rounded-lg appearance-none cursor-pointer ${outputFormat === 'image/webp' ? 'accent-cyan-400' : 'accent-fuchsia-400'}`}
                         />
                       </div>
                     </div>
@@ -503,7 +510,7 @@ export default function App() {
                     <div className="w-full xl:w-auto flex flex-col sm:flex-row gap-4">
                       <button
                         onClick={() => fileInputRef.current?.click()}
-                        className="flex-1 sm:flex-none bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 px-6 rounded-lg transition-colors border border-slate-600 hover:border-slate-500"
+                        className="flex-1 sm:flex-none bg-white/5 hover:bg-white/10 text-white font-medium py-3 px-8 rounded-xl transition-all border border-white/10 hover:border-white/20 backdrop-blur-sm"
                       >
                         Add Images
                       </button>
@@ -518,15 +525,15 @@ export default function App() {
                       <button
                         onClick={handleConvertAll}
                         disabled={isProcessingAll || !images.some(img => img.status === 'pending')}
-                        className={`flex-1 sm:flex-none font-bold py-3 px-8 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-lg ${outputFormat === 'image/webp' ? 'bg-sky-600 hover:bg-sky-500 shadow-sky-900/20' : 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-900/20'}`}
+                        className={`flex-1 sm:flex-none font-bold py-3 px-10 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-lg hover:translate-y-[-2px] active:translate-y-[0px] ${outputFormat === 'image/webp' ? 'bg-gradient-to-r from-cyan-500 to-blue-600 hover:shadow-cyan-500/25' : 'bg-gradient-to-r from-fuchsia-600 to-purple-600 hover:shadow-fuchsia-500/25'}`}
                       >
                         {isProcessingAll && <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>}
-                        Convert All Pending
+                        Convert All
                       </button>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
                     {images.map(image => (
                       <ImageCard
                         key={image.id}
@@ -545,14 +552,14 @@ export default function App() {
           )}
         </main>
 
-        <footer className="mt-16 text-center border-t border-slate-800 pt-8 pb-4">
-          <p className="text-slate-500">
+        <footer className="mt-24 text-center border-t border-white/5 pt-10 pb-6">
+          <p className="text-slate-500 text-sm">
             Powered by{' '}
             <a
               href="https://www.cosmonet.info/"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-indigo-500 hover:opacity-80 transition-opacity"
+              className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-400 to-cyan-400 hover:opacity-80 transition-opacity"
             >
               CosmoNet.info
             </a>
