@@ -27,6 +27,36 @@ export const getSupabaseClient = (): SupabaseClient | null => {
     return null;
 };
 
+// Singleton object to hold the client reference
+export const supabaseState = {
+    client: getSupabaseClient()
+};
+
+// Direct export using a getter is safer for some bundlers, but specialized 'let' modification is tricky.
+// SAFEST APPROACH: Export an object that mimics the client but delegates.
+// However, since we need to pass this to components, let's just use a consistent pattern.
+
+// UPDATED APPROACH: 
+// 1. Export 'getSupabaseClient' for manual retrieval.
+// 2. Export 'supabase' as a constant proxy/object that calls the current client.
+// 3. 'updateSupabaseConfig' updates the internal instance.
+
+export const supabase = new Proxy({}, {
+    get: (_target, prop) => {
+        const client = getSupabaseClient();
+        if (client) {
+            // @ts-ignore
+            return client[prop];
+        }
+        // If NO client is configured, return undefined or handle gracefully?
+        // Returning undefined might crash if user does supabase.from(...)
+        // Let's warn and return a dummy that throws on invocation for easier debugging
+        console.warn(`Supabase client accessed but not configured. Property: ${String(prop)}`);
+        return undefined;
+    }
+}) as SupabaseClient;
+
+
 // Function to update credentials dynamically
 export const updateSupabaseConfig = (url: string, key: string) => {
     if (url && key) {
@@ -34,33 +64,15 @@ export const updateSupabaseConfig = (url: string, key: string) => {
         localStorage.setItem('supabaseKey', key);
         supabaseInstance = createClient(url, key);
     } else {
-        // Clear custom settings
         localStorage.removeItem('supabaseUrl');
         localStorage.removeItem('supabaseKey');
         supabaseInstance = null;
-
-        // Attempt to reset to env if available
         if (envUrl && envKey) {
             supabaseInstance = createClient(envUrl, envKey);
         }
     }
-    // Reload page to ensure all components pick up new client? 
-    // Or better, components should be reactive. For now, simple reload or we let components call getSupabaseClient() again.
+    // Update the state wrapper if we were using it, but with Proxy we don't need to.
     return supabaseInstance;
-};
-
-// Direct export using mutable binding. 
-// This allows imports to see the updated value when updateSupabaseConfig is called.
-export let supabase = getSupabaseClient();
-
-// Hook into the update function to update the export
-const originalUpdate = updateSupabaseConfig;
-// @ts-ignore
-updateSupabaseConfig = (url: string, key: string) => {
-    const newClient = originalUpdate(url, key);
-    // Update the exported variable
-    supabase = newClient;
-    return newClient;
 };
 
 export const isSupabaseConfigured = () => {
