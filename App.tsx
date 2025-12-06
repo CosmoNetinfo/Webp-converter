@@ -544,6 +544,21 @@ export default function App() {
             </>
           )}
         </main>
+
+        <footer className="mt-16 text-center border-t border-slate-800 pt-8 pb-4">
+          <p className="text-slate-500">
+            Powered by{' '}
+            <a
+              href="https://www.cosmonet.info/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-indigo-500 hover:opacity-80 transition-opacity"
+            >
+              CosmoNet.info
+            </a>
+            {' '}di Daniele Spalletti
+          </p>
+        </footer>
       </div>
     </div>
   );
