@@ -25,7 +25,7 @@
     ],
     "win": {
       "target": "portable",
-      "icon": "public/vite.svg"
+      "icon": "public/icon.png"
     },
     "linux": {
       "target": "AppImage"

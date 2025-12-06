@@ -1,52 +1,59 @@
 # Cosmo Converter (WebP & AVIF)
 
-A high-performance image converter built with React, Vite, and Supabase.
-Convert your images to modern web formats (WebP, AVIF) and seamlessly upload them to your localized cloud gallery.
+A high-performance, aesthetically pleasing image converter that transforms your images into modern web formats (WebP & AVIF). Built with React, Vite, TailwindCSS, and Electron.
 
 ## Features
 
-- **Local Conversion**: Convert images to WebP and AVIF entirely in your browser.
-- **Cloud Gallery**: Integrated with Supabase to host your images and provide public URLs.
-- **Portable App**: Can be built as a standalone portable executable for Windows.
-- **Cosmo Theme**: A beautiful, deep-space inspired dark interface.
+*   **Modern UI**: "Cosmo Theme" with deep space gradients and glassmorphism.
+*   **Dual Mode**: Works as a Web App (Vercel) and a Portable Desktop App (Windows).
+*   **Format Support**: Convert images to WebP and AVIF.
+*   **Cloud Gallery**: (Optional) Integrate with Supabase to save and host converted images.
+*   **Privacy First**: Processing happens locally in your browser/app. Settings are stored locally.
 
-## Setup & Run Locally
+## 🚀 Getting Started
 
-1. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+### Web Version
+Visit the deployed application (e.g., on Vercel). No installation required.
 
-2. **Configure Environment:**
-   Create a `.env` file in the root directory with your Supabase credentials:
-   ```
-   VITE_SUPABASE_URL=your_supabase_url
-   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-   ```
-   *Note: Without these, the Cloud Gallery feature will be disabled.*
+### Portable Desktop Version (Windows)
+1.  Download the `Cosmo Converter 1.0.0.exe` file from the **Releases** section.
+2.  Double-click to run. No installation needed.
+    *   *Note: If Windows SmartScreen appears, click "More info" > "Run anyway".*
 
-3. **Run the development server:**
-   ```bash
-   npm run dev
-   ```
+## ☁️ Cloud Configuration (Optional)
+To enable the "Cloud Gallery" feature:
+1.  Open the app and go to the **Settings** tab.
+2.  Enter your **Supabase Project URL** and **Anon Key**.
+    *   *These are saved locally on your device.*
+3.  Click "Save Configuration".
 
-## Build Portable App (Windows)
+## 🛠️ For Developers
 
-To create a standalone `.exe` file that you can carry on a USB drive:
+### Installation
+```bash
+npm install
+```
 
-1. **Run the builder:**
-   ```bash
-   npm run electron:build
-   ```
+### Run Locally (Web)
+```bash
+npm run dev
+```
 
-2. **Locate the executable:**
-   The portable app will be created in the `dist-electron` folder.
+### Build Portable App
+To create the standalone `.exe` file:
+```bash
+npm run electron:build
+```
+The output file will be in the `dist-electron` folder.
 
-## Technologies
+### Deployment (Vercel)
+The project is configured for Vercel. Ensure you add the environment variables in Vercel settings if you want a default cloud config, or let users provide their own via the UI.
 
-- React 19
-- Vite
-- TypeScript
-- Tailwind CSS
-- Supabase (Database & Storage)
-- Electron (for desktop version)
+## 📦 How to Release on GitHub
+1.  Run `npm run electron:build` to generate the `.exe`.
+2.  Go to GitHub > **Releases** > **Draft a new release**.
+3.  Tag version: `v1.0.0`.
+4.  Title: `Cosmo Converter v1.0.0 (Portable)`.
+5.  Description: "First release of the Cosmo Converter portable app."
+6.  **Attach binaries**: Drag and drop the `Cosmo Converter 1.0.0.exe` from your `dist-electron` folder.
+7.  Publish release.
