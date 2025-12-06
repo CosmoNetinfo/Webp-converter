@@ -40,21 +40,5 @@ npm install
 npm run dev
 ```
 
-### Compilazione App Portatile
-Per creare il file `.exe` autonomo:
-```bash
-npm run electron:build
-```
-Il file generato si troverà nella cartella `dist-electron`.
 
-### Deploy (Vercel)
-Il progetto è configurato per Vercel. Assicurati di aggiungere le variabili d'ambiente nelle impostazioni di Vercel se desideri una configurazione cloud predefinita, oppure lascia che siano gli utenti a fornirle tramite l'interfaccia.
 
-## 📦 Come Pubblicare su GitHub
-1.  Esegui `npm run electron:build` per generare il file `.exe`.
-2.  Vai su GitHub > **Releases** > **Draft a new release**.
-3.  Tag version: `v1.0.0`.
-4.  Titolo: `Cosmo Converter v1.0.0 (Portable)`.
-5.  Descrizione: "Prima release dell'app portatile Cosmo Converter."
-6.  **Allega binari**: Trascina e rilascia il file `Cosmo Converter 1.0.0.exe` dalla tua cartella `dist-electron`.
-7.  Pubblica la release.
