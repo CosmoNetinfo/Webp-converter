@@ -1,6 +1,8 @@
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import type { ProcessedImage } from './types';
+import { supabase, isSupabaseConfigured } from './supabaseClient';
+import { CloudGallery } from './CloudGallery';
 
 // --- Helper Functions ---
 const formatBytes = (bytes: number, decimals = 2): string => {
@@ -93,6 +95,12 @@ const TrashIcon: React.FC<{ className?: string }> = ({ className }) => (
   </svg>
 );
 
+const CloudIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
+  </svg>
+);
+
 
 // --- Components ---
 
@@ -125,7 +133,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFilesSelected }) => {
     e.preventDefault();
     e.stopPropagation();
   };
-  
+
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -135,9 +143,9 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFilesSelected }) => {
       e.dataTransfer.clearData();
     }
   };
-  
+
   return (
-    <div 
+    <div
       className={`w-full max-w-4xl mx-auto border-4 border-dashed rounded-2xl p-8 text-center transition-all duration-300 ${isDragging ? 'border-sky-400 bg-slate-800' : 'border-slate-600 hover:border-sky-500 hover:bg-slate-800/50'}`}
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
@@ -145,7 +153,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFilesSelected }) => {
       onDrop={handleDrop}
       onClick={() => inputRef.current?.click()}
     >
-      <UploadIcon className="w-16 h-16 mx-auto text-slate-500 mb-4"/>
+      <UploadIcon className="w-16 h-16 mx-auto text-slate-500 mb-4" />
       <p className="text-xl font-semibold">Drag & Drop images here</p>
       <p className="text-slate-400">Supported: JPG, PNG, GIF, BMP, WebP, AVIF</p>
       <input
@@ -167,9 +175,10 @@ interface ImageCardProps {
   onRename: (id: string, newName: string) => void;
   onConvert: (id: string) => void;
   onRemove: (id: string) => void;
+  onUpload: (id: string) => void;
 }
-const ImageCard: React.FC<ImageCardProps> = ({ image, targetFormat, onRename, onConvert, onRemove }) => {
-  
+const ImageCard: React.FC<ImageCardProps> = ({ image, targetFormat, onRename, onConvert, onRemove, onUpload }) => {
+
   // If conversion is done, use the format it was converted to. Otherwise, use the current global target.
   const activeFormat = image.status === 'done' && image.convertedFormat ? image.convertedFormat : targetFormat;
   const extension = getExtensionFromMimeType(activeFormat);
@@ -185,35 +194,35 @@ const ImageCard: React.FC<ImageCardProps> = ({ image, targetFormat, onRename, on
   };
 
   const getStatusIndicator = () => {
-    switch(image.status) {
+    switch (image.status) {
       case 'pending':
         return <button onClick={() => onConvert(image.id)} className="w-full bg-sky-600 hover:bg-sky-500 text-white font-bold py-2 px-4 rounded-md transition-colors">Convert</button>;
       case 'converting':
         return <div className="flex items-center justify-center text-slate-300"><div className="animate-spin rounded-full h-5 w-5 border-b-2 border-sky-400 mr-2"></div>Converting...</div>;
       case 'done':
-        return <div className="text-green-400 flex items-center justify-center"><CheckCircleIcon className="w-5 h-5 mr-2"/>Done</div>;
+        return <div className="text-green-400 flex items-center justify-center"><CheckCircleIcon className="w-5 h-5 mr-2" />Done</div>;
       case 'error':
-        return <div className="text-red-400 flex items-center justify-center text-center text-xs" title={image.error}><XCircleIcon className="w-5 h-5 mr-1 mb-0.5 inline"/>{image.error || "Error"}</div>;
+        return <div className="text-red-400 flex items-center justify-center text-center text-xs" title={image.error}><XCircleIcon className="w-5 h-5 mr-1 mb-0.5 inline" />{image.error || "Error"}</div>;
     }
   };
 
   return (
     <div className="bg-slate-800 rounded-lg overflow-hidden shadow-lg transition-all hover:shadow-sky-500/20">
       <div className="relative">
-        <img src={image.previewUrl} alt={image.originalFile.name} className="w-full h-48 object-cover"/>
+        <img src={image.previewUrl} alt={image.originalFile.name} className="w-full h-48 object-cover" />
         <button onClick={() => onRemove(image.id)} className="absolute top-2 right-2 p-1.5 bg-black/50 rounded-full text-white hover:bg-red-500 transition-colors">
-          <TrashIcon className="w-5 h-5"/>
+          <TrashIcon className="w-5 h-5" />
         </button>
         {image.status === 'done' && (
-           <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/70 rounded text-xs text-green-400 font-mono uppercase">
-             {extension}
-           </div>
+          <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/70 rounded text-xs text-green-400 font-mono uppercase">
+            {extension}
+          </div>
         )}
       </div>
       <div className="p-4 space-y-3">
         <div className="flex items-center bg-slate-900 rounded-md">
-          <input 
-            type="text" 
+          <input
+            type="text"
             value={image.newName}
             onChange={(e) => onRename(image.id, e.target.value)}
             className="bg-transparent w-full p-2 focus:outline-none min-w-0"
@@ -230,11 +239,28 @@ const ImageCard: React.FC<ImageCardProps> = ({ image, targetFormat, onRename, on
             <span className="font-mono">{formatBytes(image.convertedSize)}</span>
           </div>
         )}
-        <div className="pt-2">
+        <div className="pt-2 flex flex-col gap-2">
           {image.status === 'done' ? (
-             <button onClick={handleDownload} className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded-md transition-colors flex items-center justify-center">
+            <>
+              <button onClick={handleDownload} className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded-md transition-colors flex items-center justify-center">
                 <DownloadIcon className="w-5 h-5 mr-2" /> Download
               </button>
+              {isSupabaseConfigured() && (
+                <button
+                  onClick={() => onUpload(image.id)}
+                  disabled={image.isUploading || !!image.cloudUrl}
+                  className={`w-full font-bold py-2 px-4 rounded-md transition-colors flex items-center justify-center ${image.cloudUrl ? 'bg-indigo-900/50 text-indigo-300 cursor-default' : 'bg-indigo-600 hover:bg-indigo-500 text-white'}`}
+                >
+                  {image.isUploading ? (
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  ) : image.cloudUrl ? (
+                    <>Uploaded <CheckCircleIcon className="w-5 h-5 ml-2" /></>
+                  ) : (
+                    <><CloudIcon className="w-5 h-5 mr-2" /> Save to Cloud</>
+                  )}
+                </button>
+              )}
+            </>
           ) : getStatusIndicator()}
         </div>
       </div>
@@ -249,19 +275,21 @@ export default function App() {
   const [quality, setQuality] = useState(0.8);
   const [outputFormat, setOutputFormat] = useState('image/webp');
   const [isProcessingAll, setIsProcessingAll] = useState(false);
+  const [activeTab, setActiveTab] = useState<'converter' | 'cloud'>('converter');
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFilesSelected = (files: File[]) => {
     const newImages: ProcessedImage[] = files
-    .filter(file => file.type.startsWith('image/'))
-    .map(file => ({
-      id: crypto.randomUUID(),
-      originalFile: file,
-      previewUrl: URL.createObjectURL(file),
-      newName: file.name.split('.').slice(0, -1).join('.') || file.name,
-      status: 'pending',
-      originalSize: file.size,
-    }));
+      .filter(file => file.type.startsWith('image/'))
+      .map(file => ({
+        id: crypto.randomUUID(),
+        originalFile: file,
+        previewUrl: URL.createObjectURL(file),
+        newName: file.name.split('.').slice(0, -1).join('.') || file.name,
+        status: 'pending',
+        originalSize: file.size,
+      }));
 
     setImages(prev => [...prev, ...newImages]);
   };
@@ -269,12 +297,12 @@ export default function App() {
   const handleRename = (id: string, newName: string) => {
     setImages(prev => prev.map(img => img.id === id ? { ...img, newName } : img));
   };
-  
+
   const handleRemove = (id: string) => {
     const imageToRemove = images.find(img => img.id === id);
-    if(imageToRemove) {
+    if (imageToRemove) {
       URL.revokeObjectURL(imageToRemove.previewUrl);
-      if(imageToRemove.convertedUrl) {
+      if (imageToRemove.convertedUrl) {
         URL.revokeObjectURL(imageToRemove.convertedUrl);
       }
     }
@@ -283,7 +311,7 @@ export default function App() {
 
   const handleConvert = useCallback(async (id: string) => {
     setImages(prev => prev.map(img => img.id === id ? { ...img, status: 'converting', error: undefined } : img));
-    
+
     // Capture current settings at the start of conversion
     const formatToUse = outputFormat;
     const qualityToUse = quality;
@@ -294,12 +322,12 @@ export default function App() {
     try {
       const blob = await convertImage(imageToConvert.originalFile, formatToUse, qualityToUse);
       const convertedUrl = URL.createObjectURL(blob);
-      setImages(prev => prev.map(img => img.id === id ? { 
-        ...img, 
-        status: 'done', 
-        convertedUrl, 
+      setImages(prev => prev.map(img => img.id === id ? {
+        ...img,
+        status: 'done',
+        convertedUrl,
         convertedSize: blob.size,
-        convertedFormat: formatToUse 
+        convertedFormat: formatToUse
       } : img));
     } catch (error) {
       console.error(error);
@@ -313,27 +341,17 @@ export default function App() {
     // Only convert pending images
     const pendingImages = images.filter(img => img.status === 'pending');
     for (const image of pendingImages) {
-      // Re-fetch the function to ensure we use the latest state if it were to change, 
-      // although handleConvert uses closure values which is why we must rely on state being consistent during loop.
-      // However, handleConvert depends on [images] which changes. 
-      // A better approach for "All" is to iterate and call logic directly or handle the dependencies carefully.
-      // For simplicity here we iterate. To avoid stale state issues in the loop, we pass the current global settings.
-      
-      // We'll just call the generic converter logic directly to avoid dependency complexity or just trigger them sequentially.
-      // Since handleConvert depends on images, calling it in a loop might be tricky if not memoized correctly or if state updates clash.
-      // Let's implement a direct robust loop here.
-      
       setImages(prev => prev.map(img => img.id === image.id ? { ...img, status: 'converting', error: undefined } : img));
-      
+
       try {
         const blob = await convertImage(image.originalFile, outputFormat, quality);
         const convertedUrl = URL.createObjectURL(blob);
-        setImages(prev => prev.map(img => img.id === image.id ? { 
-          ...img, 
-          status: 'done', 
-          convertedUrl, 
+        setImages(prev => prev.map(img => img.id === image.id ? {
+          ...img,
+          status: 'done',
+          convertedUrl,
           convertedSize: blob.size,
-          convertedFormat: outputFormat 
+          convertedFormat: outputFormat
         } : img));
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Conversion failed';
@@ -343,101 +361,186 @@ export default function App() {
     setIsProcessingAll(false);
   };
 
+  const handleUpload = async (id: string) => {
+    const imageToUpload = images.find(img => img.id === id);
+    if (!imageToUpload || !imageToUpload.convertedUrl) return;
+
+    setImages(prev => prev.map(img => img.id === id ? { ...img, isUploading: true } : img));
+
+    try {
+      // Fetch blob from blob URL
+      const response = await fetch(imageToUpload.convertedUrl);
+      const blob = await response.blob();
+      const extension = getExtensionFromMimeType(imageToUpload.convertedFormat || 'image/webp');
+      const fileName = `${Date.now()}_${imageToUpload.newName}.${extension}`;
+
+      // Upload to Storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('images')
+        .upload(fileName, blob, {
+          contentType: imageToUpload.convertedFormat
+        });
+
+      if (uploadError) throw uploadError;
+
+      // Get Public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('images')
+        .getPublicUrl(fileName);
+
+      // Insert into Table
+      const { error: dbError } = await supabase
+        .from('images')
+        .insert({
+          original_name: imageToUpload.newName,
+          url: publicUrl,
+          format: extension,
+          size: blob.size
+        });
+
+      if (dbError) throw dbError;
+
+      setImages(prev => prev.map(img => img.id === id ? {
+        ...img,
+        isUploading: false,
+        cloudUrl: publicUrl
+      } : img));
+
+      alert('Upload successful!');
+
+    } catch (error) {
+      console.error('Upload failed:', error);
+      const msg = error instanceof Error ? error.message : 'Upload failed';
+      alert(`Error uploading: ${msg}`);
+      setImages(prev => prev.map(img => img.id === id ? { ...img, isUploading: false } : img));
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-900 text-white p-4 sm:p-8">
       <div className="max-w-7xl mx-auto">
         <header className="text-center mb-8">
           <h1 className="text-4xl sm:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-indigo-500">WebP & AVIF Converter</h1>
-          <p className="text-slate-400 mt-2">Convert your images to modern web formats with ease.</p>
+          <p className="text-slate-400 mt-2 mb-6">Convert your images to modern web formats with ease.</p>
+
+          {!isSupabaseConfigured() && (
+            <div className="bg-amber-500/10 text-amber-200 p-4 rounded-lg border border-amber-500/50 inline-block mb-6">
+              <strong>Config Missing:</strong> Add your Supabase URL and Anon Key to <code>.env</code> file to enable Cloud Gallery.
+            </div>
+          )}
+
+          {isSupabaseConfigured() && (
+            <div className="flex justify-center gap-4 border-b border-slate-700 pb-1">
+              <button
+                onClick={() => setActiveTab('converter')}
+                className={`px-4 py-2 font-medium border-b-2 transition-colors ${activeTab === 'converter' ? 'border-sky-500 text-white' : 'border-transparent text-slate-400 hover:text-white'}`}
+              >
+                Converter
+              </button>
+              <button
+                onClick={() => setActiveTab('cloud')}
+                className={`px-4 py-2 font-medium border-b-2 transition-colors ${activeTab === 'cloud' ? 'border-sky-500 text-white' : 'border-transparent text-slate-400 hover:text-white'}`}
+              >
+                Cloud Gallery
+              </button>
+            </div>
+          )}
         </header>
 
         <main>
-          {images.length === 0 ? (
-            <FileUploader onFilesSelected={handleFilesSelected} />
+          {activeTab === 'cloud' ? (
+            <CloudGallery />
           ) : (
             <>
-              {/* Controls Bar */}
-              <div className="bg-slate-800/50 rounded-xl p-6 mb-8 flex flex-col xl:flex-row gap-6 items-start xl:items-end justify-between border border-slate-700/50">
-                  
-                  {/* Settings Group */}
-                  <div className="flex flex-col md:flex-row gap-6 w-full xl:w-auto">
-                    {/* Format Selector */}
-                    <div className="w-full md:w-48">
-                      <label className="block mb-2 font-medium text-slate-300 text-sm uppercase tracking-wide">Output Format</label>
-                      <div className="flex bg-slate-700 rounded-lg p-1">
-                        <button 
-                          onClick={() => setOutputFormat('image/webp')} 
-                          className={`flex-1 py-2 px-3 rounded-md text-sm font-bold transition-all ${outputFormat === 'image/webp' ? 'bg-sky-600 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-slate-600'}`}
-                        >
-                          WebP
-                        </button>
-                        <button 
-                          onClick={() => setOutputFormat('image/avif')} 
-                          className={`flex-1 py-2 px-3 rounded-md text-sm font-bold transition-all ${outputFormat === 'image/avif' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-slate-600'}`}
-                        >
-                          AVIF
-                        </button>
+              {images.length === 0 ? (
+                <FileUploader onFilesSelected={handleFilesSelected} />
+              ) : (
+                <>
+                  {/* Controls Bar */}
+                  <div className="bg-slate-800/50 rounded-xl p-6 mb-8 flex flex-col xl:flex-row gap-6 items-start xl:items-end justify-between border border-slate-700/50">
+
+                    {/* Settings Group */}
+                    <div className="flex flex-col md:flex-row gap-6 w-full xl:w-auto">
+                      {/* Format Selector */}
+                      <div className="w-full md:w-48">
+                        <label className="block mb-2 font-medium text-slate-300 text-sm uppercase tracking-wide">Output Format</label>
+                        <div className="flex bg-slate-700 rounded-lg p-1">
+                          <button
+                            onClick={() => setOutputFormat('image/webp')}
+                            className={`flex-1 py-2 px-3 rounded-md text-sm font-bold transition-all ${outputFormat === 'image/webp' ? 'bg-sky-600 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-slate-600'}`}
+                          >
+                            WebP
+                          </button>
+                          <button
+                            onClick={() => setOutputFormat('image/avif')}
+                            className={`flex-1 py-2 px-3 rounded-md text-sm font-bold transition-all ${outputFormat === 'image/avif' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-slate-600'}`}
+                          >
+                            AVIF
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Quality Slider */}
+                      <div className="w-full md:w-64">
+                        <label htmlFor="quality" className="block mb-2 font-medium text-slate-300 text-sm uppercase tracking-wide flex justify-between">
+                          <span>Quality</span>
+                          <span className={`font-bold ${outputFormat === 'image/webp' ? 'text-sky-400' : 'text-indigo-400'}`}>{Math.round(quality * 100)}%</span>
+                        </label>
+                        <input
+                          type="range"
+                          id="quality"
+                          min="0.1"
+                          max="1"
+                          step="0.05"
+                          value={quality}
+                          onChange={e => setQuality(parseFloat(e.target.value))}
+                          className={`w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer ${outputFormat === 'image/webp' ? 'accent-sky-500' : 'accent-indigo-500'}`}
+                        />
                       </div>
                     </div>
 
-                    {/* Quality Slider */}
-                    <div className="w-full md:w-64">
-                      <label htmlFor="quality" className="block mb-2 font-medium text-slate-300 text-sm uppercase tracking-wide flex justify-between">
-                        <span>Quality</span>
-                        <span className={`font-bold ${outputFormat === 'image/webp' ? 'text-sky-400' : 'text-indigo-400'}`}>{Math.round(quality * 100)}%</span>
-                      </label>
-                      <input 
-                        type="range" 
-                        id="quality"
-                        min="0.1"
-                        max="1"
-                        step="0.05"
-                        value={quality}
-                        onChange={e => setQuality(parseFloat(e.target.value))}
-                        className={`w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer ${outputFormat === 'image/webp' ? 'accent-sky-500' : 'accent-indigo-500'}`}
+                    {/* Actions Group */}
+                    <div className="w-full xl:w-auto flex flex-col sm:flex-row gap-4">
+                      <button
+                        onClick={() => fileInputRef.current?.click()}
+                        className="flex-1 sm:flex-none bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 px-6 rounded-lg transition-colors border border-slate-600 hover:border-slate-500"
+                      >
+                        Add Images
+                      </button>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        multiple
+                        accept="image/png, image/jpeg, image/gif, image/bmp, image/webp, image/avif"
+                        className="hidden"
+                        onChange={(e) => e.target.files && handleFilesSelected(Array.from(e.target.files))}
                       />
+                      <button
+                        onClick={handleConvertAll}
+                        disabled={isProcessingAll || !images.some(img => img.status === 'pending')}
+                        className={`flex-1 sm:flex-none font-bold py-3 px-8 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-lg ${outputFormat === 'image/webp' ? 'bg-sky-600 hover:bg-sky-500 shadow-sky-900/20' : 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-900/20'}`}
+                      >
+                        {isProcessingAll && <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>}
+                        Convert All Pending
+                      </button>
                     </div>
                   </div>
 
-                  {/* Actions Group */}
-                  <div className="w-full xl:w-auto flex flex-col sm:flex-row gap-4">
-                    <button 
-                      onClick={() => fileInputRef.current?.click()}
-                      className="flex-1 sm:flex-none bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 px-6 rounded-lg transition-colors border border-slate-600 hover:border-slate-500"
-                    >
-                      Add Images
-                    </button>
-                    <input 
-                      ref={fileInputRef} 
-                      type="file" 
-                      multiple 
-                      accept="image/png, image/jpeg, image/gif, image/bmp, image/webp, image/avif" 
-                      className="hidden" 
-                      onChange={(e) => e.target.files && handleFilesSelected(Array.from(e.target.files))}
-                    />
-                    <button 
-                      onClick={handleConvertAll}
-                      disabled={isProcessingAll || !images.some(img => img.status === 'pending')}
-                      className={`flex-1 sm:flex-none font-bold py-3 px-8 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-lg ${outputFormat === 'image/webp' ? 'bg-sky-600 hover:bg-sky-500 shadow-sky-900/20' : 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-900/20'}`}
-                    >
-                      {isProcessingAll && <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>}
-                      Convert All Pending
-                    </button>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {images.map(image => (
+                      <ImageCard
+                        key={image.id}
+                        image={image}
+                        targetFormat={outputFormat}
+                        onRename={handleRename}
+                        onConvert={handleConvert}
+                        onRemove={handleRemove}
+                        onUpload={handleUpload}
+                      />
+                    ))}
                   </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {images.map(image => (
-                  <ImageCard 
-                    key={image.id} 
-                    image={image} 
-                    targetFormat={outputFormat}
-                    onRename={handleRename} 
-                    onConvert={handleConvert}
-                    onRemove={handleRemove}
-                  />
-                ))}
-              </div>
+                </>
+              )}
             </>
           )}
         </main>
