@@ -1,59 +1,60 @@
 # Cosmo Converter (WebP & AVIF)
 
-A high-performance, aesthetically pleasing image converter that transforms your images into modern web formats (WebP & AVIF). Built with React, Vite, TailwindCSS, and Electron.
+Un convertitore di immagini ad alte prestazioni ed esteticamente curato che trasforma le tue immagini nei moderni formati web (WebP & AVIF). Realizzato con React, Vite, TailwindCSS ed Electron.
 
-## Features
+## Caratteristiche
 
-*   **Modern UI**: "Cosmo Theme" with deep space gradients and glassmorphism.
-*   **Dual Mode**: Works as a Web App (Vercel) and a Portable Desktop App (Windows).
-*   **Format Support**: Convert images to WebP and AVIF.
-*   **Cloud Gallery**: (Optional) Integrate with Supabase to save and host converted images.
-*   **Privacy First**: Processing happens locally in your browser/app. Settings are stored locally.
+*   **Interfaccia Moderna**: "Cosmo Theme" con gradienti dello spazio profondo ed effetti glassmorphism.
+*   **Doppia Modalità**: Funziona come Web App (Vercel) e come App Desktop Portatile (Windows).
+*   **Supporto Formati**: Converti immagini in WebP e AVIF.
+*   **Galleria Cloud**: (Opzionale) Integrazione con Supabase per salvare e ospitare le immagini convertite.
+*   **Privacy First**: L'elaborazione avviene localmente nel tuo browser/app. Le impostazioni sono salvate localmente.
 
-## 🚀 Getting Started
+## 🚀 Come Iniziare
 
-### Web Version
-Visit the deployed application (e.g., on Vercel). No installation required.
+### Versione Web
+Visita l'applicazione distribuita (es. su Vercel). Nessuna installazione richiesta.
 
-### Portable Desktop Version (Windows)
-1.  Download the `Cosmo Converter 1.0.0.exe` file from the **Releases** section.
-2.  Double-click to run. No installation needed.
-    *   *Note: If Windows SmartScreen appears, click "More info" > "Run anyway".*
+### Versione Desktop Portatile (Windows)
+1.  Scarica il file `Cosmo Converter 1.0.0.exe` dalla sezione **Releases** su GitHub.
+2.  Fai doppio clic per avviare. Nessuna installazione necessaria.
+    *   *Nota: Se appare Windows SmartScreen, clicca su "Ulteriori informazioni" > "Esegui comunque".*
 
-## ☁️ Cloud Configuration (Optional)
-To enable the "Cloud Gallery" feature:
-1.  Open the app and go to the **Settings** tab.
-2.  Enter your **Supabase Project URL** and **Anon Key**.
-    *   *These are saved locally on your device.*
-3.  Click "Save Configuration".
+## ☁️ Configurazione Cloud (Opzionale)
+Per abilitare la funzionalità "Galleria Cloud":
+1.  Apri l'app e vai alla scheda **Settings** (Impostazioni).
+2.  Inserisci il tuo **Project URL** e la **Anon Key** di Supabase.
+    *   *Questi dati vengono salvati localmente sul tuo dispositivo.*
+3.  Clicca su "Save Configuration".
+    *   *Vedi la [Guida Completa alla Configurazione](GUIDA_CONFIGURAZIONE.md) per istruzioni passo-passo.*
 
-## 🛠️ For Developers
+## 🛠️ Per Sviluppatori
 
-### Installation
+### Installazione
 ```bash
 npm install
 ```
 
-### Run Locally (Web)
+### Esecuzione Locale (Web)
 ```bash
 npm run dev
 ```
 
-### Build Portable App
-To create the standalone `.exe` file:
+### Compilazione App Portatile
+Per creare il file `.exe` autonomo:
 ```bash
 npm run electron:build
 ```
-The output file will be in the `dist-electron` folder.
+Il file generato si troverà nella cartella `dist-electron`.
 
-### Deployment (Vercel)
-The project is configured for Vercel. Ensure you add the environment variables in Vercel settings if you want a default cloud config, or let users provide their own via the UI.
+### Deploy (Vercel)
+Il progetto è configurato per Vercel. Assicurati di aggiungere le variabili d'ambiente nelle impostazioni di Vercel se desideri una configurazione cloud predefinita, oppure lascia che siano gli utenti a fornirle tramite l'interfaccia.
 
-## 📦 How to Release on GitHub
-1.  Run `npm run electron:build` to generate the `.exe`.
-2.  Go to GitHub > **Releases** > **Draft a new release**.
+## 📦 Come Pubblicare su GitHub
+1.  Esegui `npm run electron:build` per generare il file `.exe`.
+2.  Vai su GitHub > **Releases** > **Draft a new release**.
 3.  Tag version: `v1.0.0`.
-4.  Title: `Cosmo Converter v1.0.0 (Portable)`.
-5.  Description: "First release of the Cosmo Converter portable app."
-6.  **Attach binaries**: Drag and drop the `Cosmo Converter 1.0.0.exe` from your `dist-electron` folder.
-7.  Publish release.
+4.  Titolo: `Cosmo Converter v1.0.0 (Portable)`.
+5.  Descrizione: "Prima release dell'app portatile Cosmo Converter."
+6.  **Allega binari**: Trascina e rilascia il file `Cosmo Converter 1.0.0.exe` dalla tua cartella `dist-electron`.
+7.  Pubblica la release.
