@@ -1,44 +1,20 @@
-# Cosmo Converter (WebP & AVIF)
+<div align="center">
+<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+</div>
 
-Un convertitore di immagini ad alte prestazioni ed esteticamente curato che trasforma le tue immagini nei moderni formati web (WebP & AVIF). Realizzato con React, Vite, TailwindCSS ed Electron.
+# Run and deploy your AI Studio app
 
-## Caratteristiche
+This contains everything you need to run your app locally.
 
-*   **Interfaccia Moderna**: "Cosmo Theme" con gradienti dello spazio profondo ed effetti glassmorphism.
-*   **Doppia Modalità**: Funziona come Web App (Vercel) e come App Desktop Portatile (Windows).
-*   **Supporto Formati**: Converti immagini in WebP e AVIF.
-*   **Galleria Cloud**: (Opzionale) Integrazione con Supabase per salvare e ospitare le immagini convertite.
-*   **Privacy First**: L'elaborazione avviene localmente nel tuo browser/app. Le impostazioni sono salvate localmente.
+View your app in AI Studio: https://ai.studio/apps/drive/1vXZiG_wtoXpr6u8UE_D58QcKHsE2cH3M
 
-## 🚀 Come Iniziare
+## Run Locally
 
-### Versione Web
-Visita l'applicazione distribuita (es. su Vercel). Nessuna installazione richiesta.
-
-### Versione Desktop Portatile (Windows)
-1.  Scarica il file `Cosmo Converter 1.0.0.exe` dalla sezione **Releases** su GitHub.
-2.  Fai doppio clic per avviare. Nessuna installazione necessaria.
-    *   *Nota: Se appare Windows SmartScreen, clicca su "Ulteriori informazioni" > "Esegui comunque".*
-
-## ☁️ Configurazione Cloud (Opzionale)
-Per abilitare la funzionalità "Galleria Cloud":
-1.  Apri l'app e vai alla scheda **Settings** (Impostazioni).
-2.  Inserisci il tuo **Project URL** e la **Anon Key** di Supabase.
-    *   *Questi dati vengono salvati localmente sul tuo dispositivo.*
-3.  Clicca su "Save Configuration".
-    *   *Vedi la [Guida Completa alla Configurazione](GUIDA_CONFIGURAZIONE.md) per istruzioni passo-passo.*
-
-## 🛠️ Per Sviluppatori
-
-### Installazione
-```bash
-npm install
-```
-
-### Esecuzione Locale (Web)
-```bash
-npm run dev
-```
+**Prerequisites:**  Node.js
 
 
-
+1. Install dependencies:
+   `npm install`
+2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+3. Run the app:
+   `npm run dev`

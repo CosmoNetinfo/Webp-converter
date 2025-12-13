@@ -8,18 +8,22 @@ export interface ProcessedImage {
   convertedUrl?: string;
   originalSize: number;
   convertedSize?: number;
+  width: number;
+  height: number;
+  convertedWidth?: number;
+  convertedHeight?: number;
   error?: string;
   convertedFormat?: string;
-  // Cloud state
-  isUploading?: boolean;
-  cloudUrl?: string;
+  isSaved?: boolean;
 }
 
-export interface CloudImage {
+export interface GalleryItem {
   id: string;
-  created_at: string;
-  original_name: string;
-  url: string;
+  name: string;
+  blob: Blob;
   format: string;
+  date: number;
+  width: number;
+  height: number;
   size: number;
 }
